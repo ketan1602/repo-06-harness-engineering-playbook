@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article 06 — Harness Engineering as a Discipline</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="/">Harness Engineering</a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/demo">Demo</a>
+    <a href="/metrics">Metrics</a>
+    <a href="/eval">Eval</a>
+  </div>
+</nav>
+<main class="container">
+  <div class="page-header">
+    <span class="badge badge-warning" style="margin-bottom:10px">Article 06</span>
+    <h1>Harness Engineering as a Discipline</h1>
+    <p class="text-muted">Treating the harness as a versioned product with a dedicated engineering discipline.</p>
+  </div>
+
+  <div class="alert alert-info" id="central-claim">
+    Breaking changes discovered in production cost 10x more to fix than those caught in CI.
+  </div>
+
+  <div class="alert alert-success" id="key-finding">
+    Key Finding: Breaking changes caught in CI in under 5 minutes. Before: discovered in production.
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Demo</div>
+      <div>Paste two harness API surfaces — the detector finds breaking changes in milliseconds.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Repository</div>
+      <div id="repo-name" class="text-accent" style="font-family:monospace">repo-06-harness-engineering-playbook</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Series Position</div>
+      <div id="series-position">Article 06 — defines the Harness Engineer role and version governance discipline</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Next Repository</div>
+      <div id="next-repo" class="text-muted" style="font-family:monospace">repo-07-agent-factory-scaffold</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px; display:flex; gap:12px; flex-wrap:wrap">
+    <a href="/demo" class="btn btn-primary">Try Breaking-Change Detector</a>
+    <a href="/metrics" class="btn btn-secondary">View Metrics</a>
+    <a href="/eval" class="btn btn-secondary">Run Eval Suite</a>
+  </div>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

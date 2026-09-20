@@ -1,0 +1,33 @@
+[project]
+name = "harness-engineering-playbook"
+version = "1.0.0"
+description = "Article 06 — Harness Engineering as a Discipline"
+requires-python = ">=3.11"
+dependencies = [
+    "agent-harness-core @ git+https://github.com/ketan1602/agent-harness-core.git@v1.0.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0.0", "pytest-asyncio>=0.23.0", "ruff", "httpx"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["compatibility", "dashboard", "eval", "versioning"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

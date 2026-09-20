@@ -1,0 +1,7 @@
+{
+  "detection_time_seconds": 0,
+  "upgrade_success_rate_pct": 0,
+  "contract_drift_pct": 0,
+  "compatibility_suite_run_seconds": 0,
+  "harness_on_call_surface_pct": 0
+}

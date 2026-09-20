@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metrics — Harness Engineering Discipline</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="/">Harness Engineering</a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/demo">Demo</a>
+    <a href="/metrics">Metrics</a>
+    <a href="/eval">Eval</a>
+  </div>
+</nav>
+<main class="container">
+  <div class="page-header">
+    <h1>Discipline Metrics</h1>
+    <p class="text-muted">Version governance and breaking-change detection measurements.</p>
+  </div>
+  <div id="metrics-content"><p class="loading">Loading metrics…</p></div>
+</main>
+<script src="/static/app.js"></script>
+<script>
+  fetch('/api/metrics')
+    .then(r => r.json())
+    .then(d => {
+      const el = document.getElementById('metrics-content');
+      if (d.no_data) {
+        el.innerHTML = `<div class="alert alert-warning">No data yet. Populate measurements/discipline_metrics.json to see charts.</div>`;
+        return;
+      }
+      const charts = d.charts;
+      el.innerHTML = `
+        <div class="alert alert-success">${d.key_finding}</div>
+        <div class="stat-grid" style="margin-bottom:20px">
+          <div>${charts.detection_stat}</div>
+          <div>${charts.drift_stat}</div>
+        </div>
+        <div class="card">
+          <h3>Upgrade Success Rate</h3>
+          <div style="margin-top:8px">${charts.upgrade_bar}</div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div class="card-title">Raw Measurements</div>
+          <table>
+            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+            <tbody>
+              ${Object.entries(d.data).map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+    })
+    .catch(err => {
+      document.getElementById('metrics-content').innerHTML =
+        `<div class="alert alert-error">Failed to load metrics: ${err.message}</div>`;
+    });
+</script>
+</body>
+</html>

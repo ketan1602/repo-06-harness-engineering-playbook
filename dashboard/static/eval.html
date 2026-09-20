@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval — Compatibility Suite</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="/">Harness Engineering</a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/demo">Demo</a>
+    <a href="/metrics">Metrics</a>
+    <a href="/eval">Eval</a>
+  </div>
+</nav>
+<main class="container">
+  <div class="page-header">
+    <h1>Eval Suite</h1>
+    <p class="text-muted">
+      Runs the compatibility suite against the installed harness_core and
+      6 breaking-change detector test cases.
+    </p>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="margin-bottom:0">Compatibility &amp; Detector Tests</h2>
+    <button class="btn btn-primary" id="run-eval-btn">Run Eval Suite</button>
+  </div>
+  <div id="eval-result"></div>
+</main>
+<script src="/static/app.js"></script>
+<script>
+  document.getElementById('run-eval-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('run-eval-btn');
+    const resultEl = document.getElementById('eval-result');
+    btn.disabled = true;
+    btn.textContent = 'Running…';
+    resultEl.innerHTML = '<div class="alert alert-info">Running compatibility suite and detector cases…</div>';
+
+    try {
+      const resp = await fetch('/eval', { method: 'POST' });
+      const d = await resp.json();
+      const compat = d.compatibility_suite;
+      const passClass = d.all_passed ? 'text-success' : 'text-error';
+      const detRows = d.detector_cases.map(c => `
+        <tr>
+          <td>${c.name}</td>
+          <td><span class="badge ${c.passed ? 'badge-success' : 'badge-error'}">${c.passed ? 'PASS' : 'FAIL'}</span></td>
+          <td>${c.expected_breaking ? 'yes' : 'no'}</td>
+          <td>${c.got_breaking ? 'yes' : 'no'}</td>
+        </tr>`).join('');
+      const compatRows = compat.checks ? compat.checks.map(c => `
+        <tr>
+          <td><code>${c.check}</code></td>
+          <td><span class="badge ${c.passed ? 'badge-success' : 'badge-error'}">${c.passed ? 'PASS' : 'FAIL'}</span></td>
+          <td class="text-muted">${c.detail}</td>
+        </tr>`).join('') : '<tr><td colspan="3">No data</td></tr>';
+
+      resultEl.innerHTML = `
+        <div class="card">
+          <h3>Overall Result</h3>
+          <div class="stat-grid" style="margin-top:8px">
+            <div><span class="text-muted">All Passed</span><br>
+              <span class="${passClass}" style="font-size:22px;font-weight:700">${d.all_passed ? 'YES' : 'NO'}</span></div>
+            <div><span class="text-muted">Detector</span><br>${d.detector_passed} / ${d.detector_total}</div>
+            <div><span class="text-muted">Compatibility</span><br>${compat.pass_count} / ${compat.total}</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px;padding:0;overflow:hidden">
+          <div style="padding:16px 20px 8px"><h3>Detector Cases</h3></div>
+          <table><thead><tr><th>Case</th><th>Result</th><th>Expect Breaking</th><th>Got Breaking</th></tr></thead>
+          <tbody>${detRows}</tbody></table>
+        </div>
+        <div class="card" style="margin-top:12px;padding:0;overflow:hidden">
+          <div style="padding:16px 20px 8px"><h3>Compatibility Suite (harness_core v1.0)</h3></div>
+          <table><thead><tr><th>Check</th><th>Result</th><th>Detail</th></tr></thead>
+          <tbody>${compatRows}</tbody></table>
+        </div>`;
+    } catch (err) {
+      resultEl.innerHTML = `<div class="alert alert-error">Eval failed: ${err.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Run Eval Suite';
+    }
+  });
+</script>
+</body>
+</html>

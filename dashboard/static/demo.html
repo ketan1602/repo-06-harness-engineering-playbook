@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo — Breaking-Change Detector</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="/">Harness Engineering</a>
+  <div class="nav-links">
+    <a href="/">Overview</a>
+    <a href="/demo">Demo</a>
+    <a href="/metrics">Metrics</a>
+    <a href="/eval">Eval</a>
+  </div>
+</nav>
+<main class="container">
+  <div class="page-header">
+    <h1>Breaking-Change Detector</h1>
+    <p class="text-muted">
+      Paste the v1 public API surface on the left and a proposed v2 on the right.
+      The detector uses Python AST to find removed names, removed methods, and changed signatures.
+    </p>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Compare API Surfaces</h3>
+      <button class="btn btn-secondary" id="load-example-btn">Load Example</button>
+    </div>
+    <form id="detector-form">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="v1_source">v1 API Surface</label>
+          <textarea id="v1_source" name="v1_source" rows="16" placeholder="Paste v1 Python API here…" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="v2_source">v2 API Surface (proposed)</label>
+          <textarea id="v2_source" name="v2_source" rows="16" placeholder="Paste v2 Python API here…" required></textarea>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" id="detect-btn">Detect Breaking Changes</button>
+    </form>
+  </div>
+
+  <div id="result-area" style="margin-top:20px"></div>
+</main>
+<script src="/static/app.js"></script>
+<script>
+  document.getElementById('load-example-btn').addEventListener('click', async () => {
+    try {
+      const resp = await fetch('/api/demo/examples');
+      const data = await resp.json();
+      document.getElementById('v1_source').value = data.v1;
+      document.getElementById('v2_source').value = data.v2;
+    } catch (err) {
+      alert('Failed to load example: ' + err.message);
+    }
+  });
+
+  document.getElementById('detector-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('detect-btn');
+    const resultArea = document.getElementById('result-area');
+    btn.disabled = true;
+    btn.textContent = 'Detecting…';
+    resultArea.innerHTML = '<p class="loading">Running AST analysis…</p>';
+
+    const data = new FormData(e.target);
+    try {
+      const resp = await fetch('/demo', { method: 'POST', body: data });
+      const json = await resp.json();
+      if (json.is_breaking) {
+        const rows = json.changes.map(c => `
+          <tr>
+            <td><span class="badge badge-error">${c.kind}</span></td>
+            <td><code>${c.name || '—'}</code></td>
+            <td>${c.detail}</td>
+          </tr>`).join('');
+        resultArea.innerHTML = `
+          <div class="alert alert-error">${json.summary}</div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <table>
+              <thead><tr><th>Type</th><th>Name</th><th>Detail</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      } else {
+        resultArea.innerHTML = `<div class="alert alert-success">${json.summary}</div>`;
+      }
+    } catch (err) {
+      resultArea.innerHTML = `<div class="alert alert-error">Request failed: ${err.message}</div>`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Detect Breaking Changes';
+    }
+  });
+</script>
+</body>
+</html>
