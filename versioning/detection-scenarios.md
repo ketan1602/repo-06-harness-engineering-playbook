@@ -1,230 +1,56 @@
 # Breaking-Change Detection Scenarios
 
-This document catalogs all 14 scenarios used to validate `breaking_change_detector.py`.
-Each scenario states: the v1 surface, the v2 surface, whether it is breaking, what the detector emits, and the rationale.
+This document describes what the CURRENT detector (`versioning/breaking_change_detector.py`, with
+`signature_model.py` and `class_model.py`) reports. Every example is an AUTHORED case from `eval/cases.py`,
+written by the repo author, with hand-labelled expected results. None is real-world evidence.
 
-Scenarios 1–8 correspond to `tests/test_breaking_changes.py`.
-Scenarios 9–14 correspond to the `DETECTOR_CASES` in `eval/runner.py`.
+Definition (from `specification/harness-spec-v1.0.md`): a change is breaking if it causes any existing, correct caller to fail.
+Scope: signature-level, stdlib `ast` only. Reproduce the measurement with `python -m eval.before_after`
+(output: `measurements/detector_before_after.json`).
 
----
+## Authored cases per change class
 
-## Framework Build Logic
+"Positive" cases must be reported; "negative" cases are a safe variant of the same class and must not be reported.
 
-### Public name resolution (Pass 1)
+| Class (expected kind) | Positive case ids (authored) | Negative case ids (authored) | Rationale |
+|---|---|---|---|
+| `removed_name` | `removed_name_pos` | `removed_name_neg` | Removing a name from `__all__` breaks `import`; adding one is additive. |
+| `removed_method` | `removed_method_pos` | `removed_method_neg` | Callers of the removed method get `AttributeError`; a new method breaks nobody. |
+| `changed_signature` | `removed_param_pos` | `removed_param_neg` | A caller passing a removed parameter gets `TypeError`; appending an optional parameter is safe. |
+| `required_param_added` | `req_added_pos_func`, `req_added_pos_kwonly` | `req_added_neg_optional` | Existing callers do not supply the new required argument. Detected directly. |
+| `optional_to_required` | `opt_to_req_pos`, `opt_to_req_pos_kwonly` | `opt_to_req_neg` | Callers relying on the default now fail; the reverse (required to optional) is safe. |
+| `positional_reorder` | `reorder_pos`, `reorder_pos_insert` | `reorder_neg_kwonly`, `reorder_neg_append` | Positional callers silently bind to the wrong parameter, including when a parameter is inserted before existing positional ones. Reordering keyword-only parameters and appending an optional parameter are safe. |
+| `ctor_change` | `ctor_pos_required`, `ctor_pos_removed_param`, `ctor_pos_new_init` | `ctor_neg_optional` | Constructor calls fail when `__init__` gains a required parameter, loses one, or a new explicit `__init__` replaces the default one. |
+| `async_flip` | `async_pos_to_async`, `async_pos_to_sync` | `async_neg_unchanged` | `await` on a sync result, or a missing `await` on a coroutine, fails callers. |
+| `kwonly_posonly_change` | `kwonly_pos_narrow`, `kwonly_pos_posonly` | `kwonly_neg_widen` | Making a parameter keyword-only or positional-only rejects existing call styles; widening is safe. |
+| `decorator_change` | `deco_pos_to_property`, `deco_pos_to_static` | `deco_neg_unchanged` | `property`, `staticmethod`, `classmethod`, `cached_property` change the calling convention. |
+| `base_removed` | `base_pos_removed` | `base_neg_added` | Removing a base class (textual, same-file) drops inherited members and `isinstance` behaviour. |
+| `ctor_change` via synthesised constructors | `dc_pos_required_field`, `dc_pos_field_removed`, `dc_pos_field_reorder`, `pyd_pos_required_field` | `dc_neg_default_field`, `dc_neg_default_factory`, `pyd_neg_optional_field`, `pyd_neg_field_order` | Dataclass and pydantic `BaseModel` fields define the constructor. Pydantic accepts keywords only, so field order is not breaking there; dataclass field order is. |
 
-```python
-# If __all__ is defined, its string elements ARE the public surface.
-# Everything outside __all__ is invisible to callers and not checked.
-__all__ = ["AgentHarness", "HarnessConfig"]  # only these two matter
+Parse errors: the detector is documented to return a structured `parse_error` result for unparseable source instead of raising. No case in `eval/cases.py` exercises it.
 
-# If __all__ is absent, all top-level non-underscore names are public.
-class AgentHarness: ...   # public
-class _Internal: ...      # private — ignored
-def run(): ...            # public
-def _helper(): ...        # private — ignored
-```
+## Benign edits (authored, must not be reported)
 
-### Removed-name detection (Pass 2)
+`benign_docstring`, `benign_comment`, `benign_body_change`, `benign_private_func`, `benign_private_method`,
+`benign_private_class`, `benign_new_export`, `benign_new_function`, `benign_new_method`, `benign_annotation_only`,
+`benign_add_varargs`, `benign_reformat`. These are changes that cannot make a correct caller fail.
 
-`v1_names - v2_names` → each missing name emits one `BreakingChange(kind="removed_name")`.
+## Out of scope BY DESIGN (breaking, not detected)
 
-### Signature check (Passes 3 & 4)
+| Case id (authored) | Change | Why it is invisible |
+|---|---|---|
+| `oos_default_value_change` | `def f(a, b=1)` to `def f(a, b=2)` | Signature shape is identical; only behaviour differs. |
+| `oos_raises_new_exception` | body now raises `ValueError` | Behavioural change; the signature is unchanged. |
 
-For functions (top-level and methods):
-- Extract `posonlyargs + args + kwonlyargs` excluding `self`/`cls`
-- Any param present in v1 but absent from v2 → `BreakingChange(kind="changed_signature")`
-- Params added in v2 are ignored (they may be optional)
+Also not covered: imported base classes (only same-file bases are compared), return and annotation semantics, runtime-generated APIs.
+These are expected misses; `measurements/detector_before_after.json` records both out-of-scope cases as caught by neither detector.
+Catching them needs behavioural conformance (the ENG-05 principle), not a structural guard.
 
----
+## Results on these authored cases
 
-## Scenarios
+From `measurements/detector_before_after.json` (51 in-scope cases, 23 expected breaking):
 
-### Scenario 1 — Remove a name from `__all__`  *(breaking)*
+- Baseline detector (frozen original, `versioning/_baseline_detector.py`): 3 of 23 caught, 0 false positives.
+- Fixed detector: 23 of 23 caught, 0 false positives.
 
-**v1:**
-```python
-__all__ = ["AgentHarness", "HarnessConfig"]
-class AgentHarness: pass
-class HarnessConfig: pass
-```
-**v2:**
-```python
-__all__ = ["AgentHarness"]
-class AgentHarness: pass
-```
-**Expected:** `BreakingChange(kind="removed_name", name="HarnessConfig")`
-
-**Rationale:** Any downstream `from harness_core import HarnessConfig` raises `ImportError` immediately. This is the most common harness-versioning mistake — renaming `HarnessConfig` without adding a re-export shim.
-
----
-
-### Scenario 2 — Add a name to `__all__`  *(not breaking)*
-
-**v1:**
-```python
-__all__ = ["AgentHarness"]
-class AgentHarness: pass
-```
-**v2:**
-```python
-__all__ = ["AgentHarness", "NewHelper"]
-class AgentHarness: pass
-class NewHelper: pass
-```
-**Expected:** no changes
-
-**Rationale:** Additive changes never break existing callers. Adding to the public API is always a minor-version bump, not major.
-
----
-
-### Scenario 3 — Remove a positional parameter from a method  *(breaking)*
-
-**v1:**
-```python
-class AgentHarness:
-    def run(self, input_data, timeout): pass
-```
-**v2:**
-```python
-class AgentHarness:
-    def run(self, input_data): pass
-```
-**Expected:** `BreakingChange(kind="changed_signature", name="AgentHarness.run", detail="Parameters removed from 'AgentHarness.run': ['timeout']")`
-
-**Rationale:** All callers passing `timeout=120` break with `TypeError: run() got an unexpected keyword argument 'timeout'`. The error is silent in the harness but loud in the caller.
-
----
-
-### Scenario 4 — Add an optional parameter to a method  *(not breaking)*
-
-**v1:**
-```python
-class AgentHarness:
-    def run(self, input_data): pass
-```
-**v2:**
-```python
-class AgentHarness:
-    def run(self, input_data, timeout=None): pass
-```
-**Expected:** no changes
-
-**Rationale:** Existing callers do not pass `timeout`; they continue to work. The new parameter has a default — no caller is forced to change.
-
----
-
-### Scenario 5 — Remove a public method from a class  *(breaking)*
-
-**v1:**
-```python
-class AgentHarness:
-    def run(self, input_data): pass
-    def reset(self): pass
-```
-**v2:**
-```python
-class AgentHarness:
-    def run(self, input_data): pass
-```
-**Expected:** `BreakingChange(kind="removed_method", name="AgentHarness.reset")`
-
-**Rationale:** Any caller doing `harness.reset()` after an error-recovery loop gets `AttributeError`. Methods in the public contract are as load-bearing as exported names.
-
----
-
-### Scenario 6 — Identical APIs  *(not breaking)*
-
-**v1 = v2:**
-```python
-def run(input_data, config): pass
-```
-**Expected:** no changes
-
-**Rationale:** Baseline check — the detector must produce zero output for unchanged surfaces. If this fires, the detector has a false-positive bug.
-
----
-
-### Scenario 7 — Remove a parameter from a top-level function  *(breaking)*
-
-**v1:**
-```python
-def run(input_data, config, timeout): pass
-```
-**v2:**
-```python
-def run(input_data, config): pass
-```
-**Expected:** `BreakingChange(kind="changed_signature", name="run", detail="Parameters removed from 'run': ['timeout']")`
-
-**Rationale:** Same logic as Scenario 3, applied to module-level functions rather than class methods.
-
----
-
-### Scenario 8 — Syntax error in source  *(parse_error)*
-
-**v1:** `def run(: pass`  (invalid Python)
-
-**v2:** `def run(): pass`
-
-**Expected:** `BreakingChange(kind="parse_error", name="", detail="<SyntaxError message>")`
-
-**Rationale:** The detector must never raise an unhandled exception. Malformed input — a paste error in the dashboard, a truncated file — returns a structured error rather than crashing the CI step.
-
----
-
-### Scenario 9 — Removed name is detected  *(breaking)*
-*(eval/runner.py — `DETECTOR_CASES[0]`)*
-
-Same as Scenario 1. Confirms the eval runner produces `expect_breaking=True` correctly against a live detector invocation.
-
----
-
-### Scenario 10 — Added name is not breaking  *(not breaking)*
-*(eval/runner.py — `DETECTOR_CASES[1]`)*
-
-Same as Scenario 2. Confirms the eval runner produces `expect_breaking=False` for an additive change.
-
----
-
-### Scenario 11 — Removed method parameter is breaking  *(breaking)*
-*(eval/runner.py — `DETECTOR_CASES[2]`)*
-
-Same as Scenario 3. Validates the eval harness round-trip: detector → eval case → dashboard `/eval` route → structured JSON output.
-
----
-
-### Scenario 12 — Added optional parameter is not breaking  *(not breaking)*
-*(eval/runner.py — `DETECTOR_CASES[3]`)*
-
-Same as Scenario 4. Validates that the eval route correctly classifies this as `passed=True` when `expect_breaking=False`.
-
----
-
-### Scenario 13 — Removed method is breaking  *(breaking)*
-*(eval/runner.py — `DETECTOR_CASES[4]`)*
-
-Same as Scenario 5. Included separately in the eval runner so the `/eval` dashboard shows a `removed_method` result alongside `removed_name` and `changed_signature` in one run.
-
----
-
-### Scenario 14 — Identical APIs produce no changes  *(not breaking)*
-*(eval/runner.py — `DETECTOR_CASES[5]`)*
-
-Same as Scenario 6. The eval runner's baseline — confirms all three passes (names, functions, class methods) produce zero output when there is nothing to report.
-
----
-
-## Coverage Summary
-
-| Breaking-change kind | Covered by scenarios |
-|---|---|
-| `removed_name` | 1, 9 |
-| `changed_signature` (method) | 3, 11 |
-| `changed_signature` (function) | 7 |
-| `removed_method` | 5, 13 |
-| `parse_error` | 8 |
-| Not breaking — additive name | 2, 10 |
-| Not breaking — optional param | 4, 12 |
-| Not breaking — identical | 6, 14 |
-
-All 4 detector output kinds and all 4 non-breaking patterns are covered.
+The fixed detector's 23/23 is partly circular: the same author wrote the fix and the cases. The baseline's 3/23 on the same cases is the informative number.
