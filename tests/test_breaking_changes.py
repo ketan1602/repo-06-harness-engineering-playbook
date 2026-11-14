@@ -78,6 +78,7 @@ def test_safe_case_reports_nothing(cid, cls, role, v1, v2, kind):
 def test_every_change_class_has_positive_negative_and_benign_cases():
     classes = {c[1] for c in CASES if c[2] == "positive"}
     assert {"required_param_added", "optional_to_required", "positional_reorder", "ctor_change",
-            "async_flip", "kwonly_posonly_change"} <= classes
+            "async_flip", "kwonly_posonly_change", "decorator_change", "base_removed",
+            "synthesised_ctor"} <= classes
     assert all(any(c[1] == k and c[2] == "negative" for c in CASES) for k in classes)
     assert sum(1 for c in CASES if c[2] == "benign") >= 10

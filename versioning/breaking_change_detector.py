@@ -2,17 +2,17 @@
 
 A change is breaking if it makes an existing, correct caller fail. Signature level only:
 removed names/methods/params, added required params, optional->required, positional reorder,
-constructor changes, async<->sync flips, and keyword-only/positional-only narrowing.
+constructor changes (explicit, dataclass or pydantic), async<->sync flips, keyword-only/
+positional-only narrowing, calling-convention decorators, and removed base classes.
 """
 from __future__ import annotations
 
 import ast
 
-from versioning.signature_model import EMPTY, BreakingChange, Sig, compare, signature
+from versioning.class_model import FUNCS, ClassInfo, class_info
+from versioning.signature_model import BreakingChange, Sig, compare, signature
 
 __all__ = ["BreakingChange", "detect"]
-
-FUNCS = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 
 def _public_names(tree: ast.Module) -> set[str]:
@@ -34,10 +34,6 @@ def _public_names(tree: ast.Module) -> set[str]:
     return names
 
 
-def _visible_method(name: str) -> bool:
-    return not name.startswith("_") or (name.startswith("__") and name.endswith("__"))
-
-
 def _top_level_funcs(tree: ast.Module) -> dict[str, Sig]:
     return {
         node.name: signature(node, False)
@@ -46,32 +42,36 @@ def _top_level_funcs(tree: ast.Module) -> dict[str, Sig]:
     }
 
 
-def _class_methods(tree: ast.Module) -> dict[str, dict[str, Sig]]:
+def _classes(tree: ast.Module) -> dict[str, ClassInfo]:
     return {
-        node.name: {
-            item.name: signature(item, True)
-            for item in node.body
-            if isinstance(item, FUNCS) and _visible_method(item.name)
-        }
+        node.name: class_info(node)
         for node in tree.body
         if isinstance(node, ast.ClassDef) and not node.name.startswith("_")
     }
 
 
-def _compare_class(cls: str, old: dict[str, Sig], new: dict[str, Sig]) -> list[BreakingChange]:
-    changes = []
-    for method, sig in old.items():
+def _method_changes(cls: str, old: ClassInfo, new: ClassInfo) -> list[BreakingChange]:
+    changes: list[BreakingChange] = []
+    for method, sig in old.methods.items():
+        name = f"{cls}.{method}"
         if method == "__init__":
             continue
-        if method not in new:
-            changes.append(BreakingChange(
-                "removed_method", f"{cls}.{method}", f"Method '{method}' removed from class '{cls}'",
-            ))
-        else:
-            changes += compare(f"{cls}.{method}", sig, new[method])
-    if "__init__" in old or "__init__" in new:
-        changes += compare(f"{cls}.__init__", old.get("__init__", EMPTY), new.get("__init__", EMPTY), "ctor_change")
+        if method not in new.methods:
+            changes.append(BreakingChange("removed_method", name, f"Method '{method}' removed from class '{cls}'"))
+            continue
+        changes += compare(name, sig, new.methods[method])
+        before, after = sorted(old.styles[method]), sorted(new.styles[method])
+        if before != after:
+            changes.append(BreakingChange("decorator_change", name, f"Calling convention changed for '{name}': {before} -> {after}"))
     return changes
+
+
+def _compare_class(cls: str, old: ClassInfo, new: ClassInfo) -> list[BreakingChange]:
+    changes = _method_changes(cls, old, new)
+    lost = [b for b in old.bases if b not in new.bases]
+    if lost:
+        changes.append(BreakingChange("base_removed", cls, f"Base classes removed from '{cls}': {lost}"))
+    return changes + compare(f"{cls}.__init__", old.ctor, new.ctor, "ctor_change")
 
 
 def detect(v1_source: str, v2_source: str) -> list[BreakingChange]:
@@ -89,8 +89,8 @@ def detect(v1_source: str, v2_source: str) -> list[BreakingChange]:
     for name, sig in _top_level_funcs(v1).items():
         if name in funcs2:
             changes += compare(name, sig, funcs2[name])
-    classes2 = _class_methods(v2)
-    for cls, methods in _class_methods(v1).items():
+    classes2 = _classes(v2)
+    for cls, info in _classes(v1).items():
         if cls in classes2:
-            changes += _compare_class(cls, methods, classes2[cls])
+            changes += _compare_class(cls, info, classes2[cls])
     return changes
