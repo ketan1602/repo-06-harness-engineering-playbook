@@ -109,7 +109,7 @@ Open `http://localhost:8000/demo`, paste two API surfaces, click **Detect Breaki
 python3 -m pytest tests/ -q
 ```
 
-Last run: 80 passed. No API calls.
+Last run: 88 passed. No API calls.
 
 ---
 
@@ -154,6 +154,28 @@ Every flip was a status change from `blocked` in v1.5.0 (7 also changed effects)
 What this shows: neither signature-level detection nor an additive label predicted a measurable change in outcomes. What it does not show: that the change was a regression. The v1.5.1 changelog describes the rule as a fix, since provider-prefixed tool names were being refused. Read the flips as outcome changes, not defects.
 
 Limits: authored cases; model decisions held fixed, so prompt or context changes between releases are invisible; one model produced all flips; the v1.5.1-era stored decisions are already normalised, so records where a rule applied (152) are excluded and the data from that era is survivor-filtered; v1.4.0 could not be replayed (the tag has no scenario module); replay uses the plain client path, not the five framework adapters; one day of recorded data. Details and exclusions: `measurements/exclusions.md`.
+
+---
+
+## Curated harness edits: which guard catches what
+
+Question: for realistic edits to harness-core v1.5.1, which guard notices? 17 authored edits, each a single exact find/replace in a temporary copy of the v1.5.1 source (the checkout is never modified), run through four guards: G1 signature detectors (baseline and fixed), G2 compatibility suite, G3 behavioural replay of 2,498 stored raw decisions (patched vs unpatched v1.5.1), G4 the harness's own test suite (only failing tests that also pass on the unpatched control count). Reproduce (about 20 minutes, no model call): `HARNESS_REPO=<checkout> MEASUREMENTS_ROOT=<repo-03 measurements> python scripts/run_edit_experiment.py`, which writes `measurements/edit_experiment.json`. Edits and the author's `intended_behaviour_change` labels are in `eval/edits.py`, fixed before any guard ran.
+
+| From `edit_experiment.json` | G1 signature | G2 compat suite | G3 replay | G4 harness tests |
+|---|---|---|---|---|
+| Edits with intended change caught (of 14) | 2 | 0 | 4 | 10 |
+| Logic edits on replay-exercised paths (of 8) | 0 | 0 | 4 | 6 |
+| Logic edits off those paths (of 4) | 0 | 0 | 0 | 2 |
+| Signature-visible edits (of 2) | 2 | 0 | 0 | 2 |
+| Benign edits flagged (of 3) | 0 | 0 | 0 | 0 |
+
+The no-edit control was clean on G2, G3 (0 flips over 2,498 paired decisions) and G4 (no new failing tests; both control runs fail the same 92 tests, caused by optional extras not installed here, see `measurements/exclusions.md`). Per-edit flip counts, categories and failing test ids are in the JSON.
+
+What it shows: the signature detectors and the compatibility suite caught no logic edit; the compatibility suite caught none of the 14 intended changes, including the two signature edits (it checks that parameter names are present, not that none were added or a method removed). Replay caught 4 of the 8 on-path logic edits and none of the 4 off-path ones. The harness's own tests caught the most (10 of 14), but they missed `preflight_budget_before_tool_check`, which replay caught (1 flip), and replay caught nothing the tests missed except that edit.
+
+Honest surprises, all from `replay_coverage` in the JSON: four of the eight edits I expected replay to catch produced zero flips because the stored raw decisions cannot reach them. There is no `suspended_agent` item among the replayed decisions (0), all 179 `over_budget` items carry the same token value (5001) so `>` versus `>=` is indistinguishable, no replayed refund amount is a string (types: float 232, int 526), and the only dotted tool names are the `functions.` prefix, so widening the stripping rule changes nothing. Replay coverage is a property of the stored decisions as much as of the 16 cases. The baseline detector caught one of the two signature edits (the removed method) and missed the added required parameter, which the fixed detector reports as `ctor_change`.
+
+What it does NOT show: the edits are authored by one person and the labels are that author's, so the catch counts are not rates over real changes. The signature detector is blind to logic edits by construction, so its 0 on logic edits is expected, not a finding about its quality. Replay holds model decisions fixed and uses 16 authored cases and one day of data. The harness test suite is written by the harness authors, so G4 is not independent evidence. Sample sizes are small (14 intended, 3 benign); this is L2 evidence.
 
 ---
 
