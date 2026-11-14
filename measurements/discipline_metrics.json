@@ -1,7 +1,9 @@
 {
-  "detection_time_seconds": 0,
-  "upgrade_success_rate_pct": 0,
-  "contract_drift_pct": 0,
-  "compatibility_suite_run_seconds": 0,
-  "harness_on_call_surface_pct": 0
+  "detection_time_seconds": null,
+  "upgrade_success_rate_pct": null,
+  "contract_drift_pct": null,
+  "compatibility_suite_run_seconds": null,
+  "harness_on_call_surface_pct": null,
+  "detector_median_runtime_us_fixed": 14.4,
+  "detector_median_runtime_us_baseline": 9.71
 }

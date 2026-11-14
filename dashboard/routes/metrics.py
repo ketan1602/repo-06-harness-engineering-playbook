@@ -8,9 +8,23 @@ from dashboard.charts import progress_bar, stat_card
 
 router = APIRouter()
 
-_KEY_FINDING = (
-    "Breaking changes caught in CI in under 5 minutes. Before: discovered in production."
-)
+_NOT_MEASURED = "not measured"
+_BEFORE_AFTER = Path("measurements/detector_before_after.json")
+
+
+def _key_finding() -> str:
+    if not _BEFORE_AFTER.exists():
+        return "No detector measurement file found; run python -m eval.before_after."
+    overall = json.loads(_BEFORE_AFTER.read_text())["overall_in_scope"]
+    return (
+        f"On authored cases only: baseline detector caught {overall['caught_by_baseline']} of "
+        f"{overall['expected_breaking']} breaking changes, fixed detector {overall['caught_by_fixed']} of "
+        f"{overall['expected_breaking']} (partly circular: same author wrote fix and cases)."
+    )
+
+
+def _fmt(value, template: str) -> str:
+    return _NOT_MEASURED if value is None else template.format(value)
 
 
 @router.get("/metrics")
@@ -27,19 +41,23 @@ async def metrics_data():
     with open(path) as f:  # noqa: ASYNC230
         data = json.load(f)
 
+    detection = data.get("detection_time_seconds")
+    upgrade = data.get("upgrade_success_rate_pct")
+    drift = data.get("contract_drift_pct")
     detection_stat = stat_card(
-        value=f"{data.get('detection_time_seconds', 0)}s",
+        value=_fmt(detection, "{}s"),
         label="CI detection time",
         sublabel="from push to failure",
         color="#22c55e",
     )
     upgrade_bar = progress_bar(
-        value=data.get("upgrade_success_rate_pct", 0) / 100,
-        label=f"Upgrade success rate: {data.get('upgrade_success_rate_pct', 0):.0f}%",
+        value=(upgrade or 0) / 100,
+        label=f"Upgrade success rate: {_fmt(upgrade, '{:.0f}%')}",
         color="#22c55e",
+        pct_text=_fmt(upgrade, "{:.0f}%"),
     )
     drift_stat = stat_card(
-        value=f"{data.get('contract_drift_pct', 0):.0f}%",
+        value=_fmt(drift, "{:.0f}%"),
         label="Agents on current version",
         sublabel="contract drift",
         color="#6366f1",
@@ -53,5 +71,5 @@ async def metrics_data():
             "upgrade_bar": upgrade_bar,
             "drift_stat": drift_stat,
         },
-        "key_finding": _KEY_FINDING,
+        "key_finding": _key_finding(),
     })

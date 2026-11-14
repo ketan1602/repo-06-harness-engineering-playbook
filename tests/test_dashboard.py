@@ -83,3 +83,19 @@ async def test_demo_post_detects_breaking_change(client):
     data = resp.json()
     assert data["is_breaking"] is True
     assert data["breaking_change_count"] >= 1
+
+
+@pytest.mark.asyncio
+async def test_api_metrics_null_renders_not_measured(client, tmp_path, monkeypatch):
+    (tmp_path / "measurements").mkdir()
+    (tmp_path / "measurements" / "discipline_metrics.json").write_text(
+        '{"detection_time_seconds": null, "upgrade_success_rate_pct": null, "contract_drift_pct": null}'
+    )
+    monkeypatch.chdir(tmp_path)
+    async with client as c:
+        resp = await c.get("/api/metrics")
+    assert resp.status_code == 200
+    charts = resp.json()["charts"]
+    for key in ("detection_stat", "upgrade_bar", "drift_stat"):
+        assert "not measured" in charts[key]
+    assert ">0%<" not in charts["upgrade_bar"]

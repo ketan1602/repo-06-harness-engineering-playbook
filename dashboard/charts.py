@@ -57,6 +57,7 @@ def progress_bar(
     color: str = SUCCESS,
     width: int = 400,
     height: int = 48,
+    pct_text: str | None = None,
 ) -> str:
     clamped = max(0.0, min(1.0, value))
     pad_x, pad_y = 12, 8
@@ -64,7 +65,7 @@ def progress_bar(
     bar_h = height - bar_y - pad_y
     bar_w = width - pad_x * 2
     fill_w = bar_w * clamped
-    pct = f"{clamped * 100:.0f}%"
+    pct = pct_text if pct_text is not None else f"{clamped * 100:.0f}%"
 
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
