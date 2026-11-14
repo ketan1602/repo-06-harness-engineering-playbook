@@ -15,3 +15,10 @@ All cases are AUTHORED by the repo author. Stored model decisions come from past
   exact error under `tag_status`.
 - Replay uses the plain-client path (the tag's own `live_model` with the network client faked), not the
   five framework adapters. Each stored framework decision is replayed, but not through its adapter.
+
+## Release history (measurements/release_history.json)
+
+- Nothing excluded: all seven tags extracted, imported and ran the suite (harness_core.__version__
+  matched each tag). Detectors ran on harness.py, schemas.py and __init__.py only; every file exists
+  at every tag. The suite checks only the v1.0 export/signature surface, so it cannot see
+  behaviour changes (for example the 1.4.0 fail-open fix in ToolRegistry, or the 1.5.1 normalisation).

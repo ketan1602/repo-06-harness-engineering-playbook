@@ -1,0 +1,1061 @@
+{
+ "labels": "Real release tags from local git; no model call. Detectors see signatures of three files only (harness.py, schemas.py, __init__.py).",
+ "compatibility_suite_per_tag": {
+  "v1.0.0": {
+   "harness_version": "1.0.0",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.0.0/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  },
+  "v1.1.0": {
+   "harness_version": "1.1.0",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.1.0/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  },
+  "v1.2.0": {
+   "harness_version": "1.2.0",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.2.0/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  },
+  "v1.3.0": {
+   "harness_version": "1.3.0",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.3.0/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  },
+  "v1.4.0": {
+   "harness_version": "1.4.0",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.4.0/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  },
+  "v1.5.0": {
+   "harness_version": "1.5.0",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.5.0/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  },
+  "v1.5.1": {
+   "harness_version": "1.5.1",
+   "import_error": null,
+   "harness_file": "/var/folders/mx/h6zysyc56994dz3p5gxt00440000gp/T/tmp5fy68r7o/v1.5.1/src/harness_core/__init__.py",
+   "suite": {
+    "passed": true,
+    "pass_count": 25,
+    "total": 25,
+    "error": null
+   },
+   "checks": [
+    {
+     "check": "export:AgentHarness",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessResult",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:HarnessConfig",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:LifecycleManager",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AgentLifecycleState",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:RetryPolicy",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:with_retry",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractValidator",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:ContractViolationError",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:AuditEmitter",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:CostTracker",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:get_logger",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "export:load_config",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:graph",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_name",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:agent_version",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:input_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "AgentHarness.__init__:output_schema",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:run_id",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:success",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:output",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:error_type",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:cost_usd",
+     "passed": true,
+     "detail": ""
+    },
+    {
+     "check": "HarnessResult:duration_ms",
+     "passed": true,
+     "detail": ""
+    }
+   ]
+  }
+ },
+ "detector_per_release_pair": {
+  "v1.0.0->v1.1.0": {
+   "changelog_says": "unspecified",
+   "changelog_paraphrase": "Changelog says entries for 1.1.0 to 1.3.0 were not recorded.",
+   "baseline": {
+    "changes": 0,
+    "items": []
+   },
+   "fixed": {
+    "changes": 0,
+    "items": []
+   },
+   "files_skipped": []
+  },
+  "v1.1.0->v1.2.0": {
+   "changelog_says": "unspecified",
+   "changelog_paraphrase": "Changelog says entries for 1.1.0 to 1.3.0 were not recorded.",
+   "baseline": {
+    "changes": 0,
+    "items": []
+   },
+   "fixed": {
+    "changes": 0,
+    "items": []
+   },
+   "files_skipped": []
+  },
+  "v1.2.0->v1.3.0": {
+   "changelog_says": "unspecified",
+   "changelog_paraphrase": "Changelog says entries for 1.1.0 to 1.3.0 were not recorded.",
+   "baseline": {
+    "changes": 0,
+    "items": []
+   },
+   "fixed": {
+    "changes": 0,
+    "items": []
+   },
+   "files_skipped": []
+  },
+  "v1.3.0->v1.4.0": {
+   "changelog_says": "breaking",
+   "changelog_paraphrase": "Marks one change Breaking (LLM evaluator env vars) and one Behaviour change (empty allowed_tools list no longer allows everything).",
+   "baseline": {
+    "changes": 0,
+    "items": []
+   },
+   "fixed": {
+    "changes": 1,
+    "items": [
+     {
+      "file": "src/harness_core/schemas.py",
+      "kind": "ctor_change",
+      "name": "HarnessResult.__init__",
+      "detail": "Positional order changed in 'HarnessResult.__init__': inserted before existing parameters: ['eval_result']"
+     }
+    ]
+   },
+   "files_skipped": []
+  },
+  "v1.4.0->v1.5.0": {
+   "changelog_says": "additive",
+   "changelog_paraphrase": "Described as additive; says nothing in 1.4.0 changes behaviour or API.",
+   "baseline": {
+    "changes": 0,
+    "items": []
+   },
+   "fixed": {
+    "changes": 0,
+    "items": []
+   },
+   "files_skipped": []
+  },
+  "v1.5.0->v1.5.1": {
+   "changelog_says": "additive",
+   "changelog_paraphrase": "Described as an additive fix; same statement about 1.4.0.",
+   "baseline": {
+    "changes": 0,
+    "items": []
+   },
+   "fixed": {
+    "changes": 0,
+    "items": []
+   },
+   "files_skipped": []
+  }
+ },
+ "source_diff_notes": {
+  "v1.3.0->v1.4.0": "Fixed-detector change checked against `git diff v1.3.0 v1.4.0` on schemas.py: a defaulted field `eval_result` was inserted in the HarnessResult dataclass before `trace_id` and `span_id`, so a caller passing those two positionally would bind them to the wrong parameters. The change is real at signature level; the changelog does not mention it, and its own Breaking/Behaviour entries (evaluator env vars, empty allowed_tools) live in files these detectors were not given."
+ }
+}
