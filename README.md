@@ -138,7 +138,7 @@ Zero API calls, zero environment setup beyond `pip install`.
 
 Installed from:
 ```
-git+ssh://git@github.com/ketan1602/agent-harness-core.git@v1.5.1
+file:../agent-harness-core/agent-harness-core  (harness-core 1.5.1, same as repo-05)
 ```
 
 This repo installs and verifies the foundation package. It does not copy, reimplement, or patch any harness code. Every `from harness_core import` in this repo is a real import of the installed package.
