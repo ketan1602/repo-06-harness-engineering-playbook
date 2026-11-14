@@ -1,0 +1,54 @@
+"""Authored detector cases. Every case here is written by the repo author; none is real-world evidence.
+
+Row: (id, change_class, role, v1_source, v2_source, expected_kind). expected_kind is None when the
+change must NOT be reported. Roles: positive (breaking), negative (same class, safe variant),
+benign (unrelated safe edit), out_of_scope (breaking but invisible to signature-level analysis).
+"""
+from __future__ import annotations
+
+CLS = "class A:\n    {}\n"
+Case = tuple[str, str, str, str, str, "str | None"]
+
+CASES: list[Case] = [
+    ("removed_name_pos", "removed_name", "positive", '__all__ = ["A", "B"]\nclass A: pass\nclass B: pass', '__all__ = ["A"]\nclass A: pass', "removed_name"),
+    ("removed_name_neg", "removed_name", "negative", '__all__ = ["A"]\nclass A: pass', '__all__ = ["A", "B"]\nclass A: pass\nclass B: pass', None),
+    ("removed_method_pos", "removed_method", "positive", CLS.format("def run(self): pass\n    def reset(self): pass"), CLS.format("def run(self): pass"), "removed_method"),
+    ("removed_method_neg", "removed_method", "negative", CLS.format("def run(self): pass"), CLS.format("def run(self): pass\n    def reset(self): pass"), None),
+    ("removed_param_pos", "changed_signature", "positive", "def f(a, b): pass", "def f(a): pass", "changed_signature"),
+    ("removed_param_neg", "changed_signature", "negative", "def f(a): pass", "def f(a, b=None): pass", None),
+    ("req_added_pos_func", "required_param_added", "positive", "def f(a): pass", "def f(a, b): pass", "required_param_added"),
+    ("req_added_pos_kwonly", "required_param_added", "positive", CLS.format("def run(self, a): pass"), CLS.format("def run(self, a, *, strict): pass"), "required_param_added"),
+    ("req_added_neg_optional", "required_param_added", "negative", "def f(a): pass", "def f(a, b=None): pass", None),
+    ("opt_to_req_pos", "optional_to_required", "positive", "def f(a, b=1): pass", "def f(a, b): pass", "optional_to_required"),
+    ("opt_to_req_pos_kwonly", "optional_to_required", "positive", "def f(a, *, b=1): pass", "def f(a, *, b): pass", "optional_to_required"),
+    ("opt_to_req_neg", "optional_to_required", "negative", "def f(a, b): pass", "def f(a, b=1): pass", None),
+    ("reorder_pos", "positional_reorder", "positive", "def f(a, b): pass", "def f(b, a): pass", "positional_reorder"),
+    ("reorder_pos_insert", "positional_reorder", "positive", "def f(a, b=1): pass", "def f(a, x=2, b=1): pass", "positional_reorder"),
+    ("reorder_neg_kwonly", "positional_reorder", "negative", "def f(a, *, x, y): pass", "def f(a, *, y, x): pass", None),
+    ("reorder_neg_append", "positional_reorder", "negative", "def f(a, b=1): pass", "def f(a, b=1, c=2): pass", None),
+    ("ctor_pos_required", "ctor_change", "positive", CLS.format("def __init__(self, a): pass"), CLS.format("def __init__(self, a, b): pass"), "ctor_change"),
+    ("ctor_pos_removed_param", "ctor_change", "positive", CLS.format("def __init__(self, a, b): pass"), CLS.format("def __init__(self, a): pass"), "ctor_change"),
+    ("ctor_pos_new_init", "ctor_change", "positive", "class A: pass", CLS.format("def __init__(self, a): pass"), "ctor_change"),
+    ("ctor_neg_optional", "ctor_change", "negative", CLS.format("def __init__(self, a): pass"), CLS.format("def __init__(self, a, b=None): pass"), None),
+    ("async_pos_to_async", "async_flip", "positive", "def f(a): pass", "async def f(a): pass", "async_flip"),
+    ("async_pos_to_sync", "async_flip", "positive", CLS.format("async def run(self): pass"), CLS.format("def run(self): pass"), "async_flip"),
+    ("async_neg_unchanged", "async_flip", "negative", "async def f(a): pass", "async def f(a): pass", None),
+    ("kwonly_pos_narrow", "kwonly_posonly_change", "positive", "def f(a, b): pass", "def f(a, *, b): pass", "kwonly_posonly_change"),
+    ("kwonly_pos_posonly", "kwonly_posonly_change", "positive", "def f(a, b): pass", "def f(a, b, /): pass", "kwonly_posonly_change"),
+    ("kwonly_neg_widen", "kwonly_posonly_change", "negative", "def f(a, *, b): pass", "def f(a, b): pass", None),
+    ("benign_docstring", "benign", "benign", 'def f(a):\n    "old"\n    return a', 'def f(a):\n    "reworded"\n    return a', None),
+    ("benign_comment", "benign", "benign", "def f(a):\n    return a", "def f(a):\n    # note\n    return a", None),
+    ("benign_body_change", "benign", "benign", "def f(a):\n    return a", "def f(a):\n    return a + 1", None),
+    ("benign_private_func", "benign", "benign", "def _h(a): pass\ndef f(a): pass", "def _h(a, b, c): pass\ndef f(a): pass", None),
+    ("benign_private_method", "benign", "benign", CLS.format("def _x(self, a): pass"), CLS.format("def _x(self): pass"), None),
+    ("benign_private_class", "benign", "benign", "class _P:\n    def m(self, a): pass", "class _P:\n    def m(self): pass", None),
+    ("benign_new_export", "benign", "benign", '__all__ = ["A"]\nclass A: pass', '__all__ = ["A", "g"]\nclass A: pass\ndef g(): pass', None),
+    ("benign_new_function", "benign", "benign", "def f(a): pass", "def f(a): pass\ndef g(b, c): pass", None),
+    ("benign_new_method", "benign", "benign", CLS.format("def run(self): pass"), CLS.format("def run(self): pass\n    def stop(self): pass"), None),
+    ("benign_annotation_only", "benign", "benign", "def f(a): pass", "def f(a: int) -> int: pass", None),
+    ("benign_add_varargs", "benign", "benign", "def f(a): pass", "def f(a, *args, **kwargs): pass", None),
+    ("benign_reformat", "benign", "benign", "def f(a, b=1): pass", "def f(\n    a,\n    b=1,\n): pass", None),
+    ("oos_method_to_property", "out_of_scope", "out_of_scope", CLS.format("def size(self): pass"), CLS.format("@property\n    def size(self): pass"), None),
+    ("oos_default_value_change", "out_of_scope", "out_of_scope", "def f(a, b=1): pass", "def f(a, b=2): pass", None),
+    ("oos_base_class_removed", "out_of_scope", "out_of_scope", "class B: pass\nclass A(B): pass", "class B: pass\nclass A: pass", None),
+]

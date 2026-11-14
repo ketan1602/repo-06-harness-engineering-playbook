@@ -1,11 +1,10 @@
 """Tests for the breaking-change detector — pure Python, no API calls."""
 from __future__ import annotations
 
+import pytest
+
+from eval.cases import CASES
 from versioning.breaking_change_detector import detect
-
-
-def _v1(src: str) -> str:
-    return src
 
 
 def test_removed_public_name_is_breaking():
@@ -60,3 +59,25 @@ def test_syntax_error_returns_parse_error():
     changes = detect("def run(: pass", "def run(): pass")
     assert len(changes) == 1
     assert changes[0].kind == "parse_error"
+
+
+def _ids(role: str) -> list:
+    return [pytest.param(*c, id=c[0]) for c in CASES if c[2] == role]
+
+
+@pytest.mark.parametrize(("cid", "cls", "role", "v1", "v2", "kind"), _ids("positive"))
+def test_positive_case_reports_expected_kind(cid, cls, role, v1, v2, kind):
+    assert kind in {c.kind for c in detect(v1, v2)}
+
+
+@pytest.mark.parametrize(("cid", "cls", "role", "v1", "v2", "kind"), _ids("negative") + _ids("benign"))
+def test_safe_case_reports_nothing(cid, cls, role, v1, v2, kind):
+    assert detect(v1, v2) == []
+
+
+def test_every_change_class_has_positive_negative_and_benign_cases():
+    classes = {c[1] for c in CASES if c[2] == "positive"}
+    assert {"required_param_added", "optional_to_required", "positional_reorder", "ctor_change",
+            "async_flip", "kwonly_posonly_change"} <= classes
+    assert all(any(c[1] == k and c[2] == "negative" for c in CASES) for k in classes)
+    assert sum(1 for c in CASES if c[2] == "benign") >= 10

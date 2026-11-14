@@ -1,21 +1,18 @@
-"""Detects breaking changes between two harness API surfaces.
+"""Detects breaking changes between two harness API surfaces (stdlib only).
 
-A breaking change is:
-- Removal of a name from the public API
-- Removal or renaming of positional parameters in a function/method
-- Removal of a public method from a class
+A change is breaking if it makes an existing, correct caller fail. Signature level only:
+removed names/methods/params, added required params, optional->required, positional reorder,
+constructor changes, async<->sync flips, and keyword-only/positional-only narrowing.
 """
 from __future__ import annotations
 
 import ast
-from dataclasses import dataclass
 
+from versioning.signature_model import EMPTY, BreakingChange, Sig, compare, signature
 
-@dataclass
-class BreakingChange:
-    kind: str
-    name: str
-    detail: str
+__all__ = ["BreakingChange", "detect"]
+
+FUNCS = (ast.FunctionDef, ast.AsyncFunctionDef)
 
 
 def _public_names(tree: ast.Module) -> set[str]:
@@ -30,86 +27,70 @@ def _public_names(tree: ast.Module) -> set[str]:
                     }
     names: set[str] = set()
     for node in tree.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-            if not node.name.startswith("_"):
-                names.add(node.name)
+        if isinstance(node, (*FUNCS, ast.ClassDef)) and not node.name.startswith("_"):
+            names.add(node.name)
         elif isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name) and not target.id.startswith("_"):
-                    names.add(target.id)
+            names.update(t.id for t in node.targets if isinstance(t, ast.Name) and not t.id.startswith("_"))
     return names
 
 
-def _func_params(func: ast.FunctionDef | ast.AsyncFunctionDef) -> list[str]:
-    args = func.args
-    all_args = args.posonlyargs + args.args + args.kwonlyargs
-    return [a.arg for a in all_args if a.arg not in ("self", "cls")]
+def _visible_method(name: str) -> bool:
+    return not name.startswith("_") or (name.startswith("__") and name.endswith("__"))
 
 
-def _top_level_funcs(tree: ast.Module) -> dict[str, list[str]]:
+def _top_level_funcs(tree: ast.Module) -> dict[str, Sig]:
     return {
-        node.name: _func_params(node)
+        node.name: signature(node, False)
         for node in tree.body
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and not node.name.startswith("_")
+        if isinstance(node, FUNCS) and not node.name.startswith("_")
     }
 
 
-def _class_methods(tree: ast.Module) -> dict[str, dict[str, list[str]]]:
-    result: dict[str, dict[str, list[str]]] = {}
-    for node in tree.body:
-        if isinstance(node, ast.ClassDef) and not node.name.startswith("_"):
-            methods = {
-                item.name: _func_params(item)
-                for item in node.body
-                if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
-                and not item.name.startswith("_")
-            }
-            result[node.name] = methods
-    return result
+def _class_methods(tree: ast.Module) -> dict[str, dict[str, Sig]]:
+    return {
+        node.name: {
+            item.name: signature(item, True)
+            for item in node.body
+            if isinstance(item, FUNCS) and _visible_method(item.name)
+        }
+        for node in tree.body
+        if isinstance(node, ast.ClassDef) and not node.name.startswith("_")
+    }
 
 
-def _check_signature(name: str, v1_params: list[str], v2_params: list[str]) -> BreakingChange | None:
-    removed = [p for p in v1_params if p not in v2_params]
-    if removed:
-        return BreakingChange("changed_signature", name, f"Parameters removed from '{name}': {removed}")
-    return None
+def _compare_class(cls: str, old: dict[str, Sig], new: dict[str, Sig]) -> list[BreakingChange]:
+    changes = []
+    for method, sig in old.items():
+        if method == "__init__":
+            continue
+        if method not in new:
+            changes.append(BreakingChange(
+                "removed_method", f"{cls}.{method}", f"Method '{method}' removed from class '{cls}'",
+            ))
+        else:
+            changes += compare(f"{cls}.{method}", sig, new[method])
+    if "__init__" in old or "__init__" in new:
+        changes += compare(f"{cls}.__init__", old.get("__init__", EMPTY), new.get("__init__", EMPTY), "ctor_change")
+    return changes
 
 
 def detect(v1_source: str, v2_source: str) -> list[BreakingChange]:
     """Compare two Python source strings and return all breaking changes found."""
     try:
-        v1 = ast.parse(v1_source)
-        v2 = ast.parse(v2_source)
+        v1, v2 = ast.parse(v1_source), ast.parse(v2_source)
     except SyntaxError as exc:
         return [BreakingChange("parse_error", "", str(exc))]
 
-    changes: list[BreakingChange] = []
-
-    v1_names = _public_names(v1)
-    v2_names = _public_names(v2)
-    for name in sorted(v1_names - v2_names):
-        changes.append(BreakingChange("removed_name", name, f"'{name}' removed from public API"))
-
-    v1_funcs = _top_level_funcs(v1)
-    v2_funcs = _top_level_funcs(v2)
-    for name, params in v1_funcs.items():
-        if name in v2_funcs and (change := _check_signature(name, params, v2_funcs[name])):
-            changes.append(change)
-
-    v1_classes = _class_methods(v1)
-    v2_classes = _class_methods(v2)
-    for cls, methods in v1_classes.items():
-        if cls not in v2_classes:
-            continue
-        v2_methods = v2_classes[cls]
-        for method, params in methods.items():
-            if method not in v2_methods:
-                changes.append(BreakingChange(
-                    "removed_method", f"{cls}.{method}",
-                    f"Method '{method}' removed from class '{cls}'",
-                ))
-            elif change := _check_signature(f"{cls}.{method}", params, v2_methods[method]):
-                changes.append(change)
-
+    changes = [
+        BreakingChange("removed_name", name, f"'{name}' removed from public API")
+        for name in sorted(_public_names(v1) - _public_names(v2))
+    ]
+    funcs2 = _top_level_funcs(v2)
+    for name, sig in _top_level_funcs(v1).items():
+        if name in funcs2:
+            changes += compare(name, sig, funcs2[name])
+    classes2 = _class_methods(v2)
+    for cls, methods in _class_methods(v1).items():
+        if cls in classes2:
+            changes += _compare_class(cls, methods, classes2[cls])
     return changes
