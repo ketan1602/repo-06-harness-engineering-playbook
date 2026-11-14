@@ -1,0 +1,1041 @@
+{
+ "labels": "Cases are AUTHORED by the repo author; decisions are stored from past live runs.",
+ "notes": [
+  "Stored `decision` in 1.5.1-era files is POST-normalisation: live_model and the framework seam write the normalised choice into the trace, and `direct_decision` is normalised the same way. See stored_decision_provenance: records with applied rules never retain a prefixed tool name.",
+  "1.5.0-era files have no `normalizations` field and 1.5.0 has no rules, so their decisions are raw.",
+  "Replayed: raw decisions only (1.5.0-era files; 1.5.1-era records with an empty normalizations list). Records with applied rules are excluded, never reconstructed.",
+  "Replay runs each tag's own live_model with the network client replaced by a fake; a mismatch between harness_core.__version__ and the tag aborts that tag."
+ ],
+ "stored_decision_provenance": {
+  "first_pass_v1.5.0": {
+   "records": 720,
+   "with_normalizations_field": 0,
+   "normalizations_nonempty": 0,
+   "nonempty_but_stored_tool_still_prefixed": 0,
+   "nonempty_but_stored_amount_still_string": 0,
+   "stored_tool_prefixed": 45,
+   "stored_amount_string": 0
+  },
+  "first_pass_v1.5.1": {
+   "records": 960,
+   "with_normalizations_field": 960,
+   "normalizations_nonempty": 53,
+   "nonempty_but_stored_tool_still_prefixed": 0,
+   "nonempty_but_stored_amount_still_string": 0,
+   "stored_tool_prefixed": 0,
+   "stored_amount_string": 0
+  },
+  "published_v1.5.1": {
+   "records": 1200,
+   "with_normalizations_field": 1200,
+   "normalizations_nonempty": 99,
+   "nonempty_but_stored_tool_still_prefixed": 0,
+   "nonempty_but_stored_amount_still_string": 0,
+   "stored_tool_prefixed": 0,
+   "stored_amount_string": 0
+  }
+ },
+ "tag_status": {
+  "v1.4.0": "not run: worker exit 1: 14/asyncio/base_events.py\", line 719, in run_until_complete\n    return future.result()\n           ~~~~~~~~~~~~~^^\n  File \"/Users/ketan.sethi/Documents/Tech-Dev/Harness-Engineering/repo-06-harness-engineering-playbook/eval/replay_worker.py\", line 38, in replay\n    from harness_core.scenarios.support.cases import load_cases, run_harnessed\nModuleNotFoundError: No module named 'harness_core.scenarios'",
+  "v1.5.0": "ran",
+  "v1.5.1": "ran"
+ },
+ "stored_items_replayable": 2498,
+ "exclusions_by_dataset_model_reason": {
+  "first_pass_v1.5.0": {
+   "meta-llama/llama-3.1-70b-instruct": {
+    "no_decision": 25
+   },
+   "openai/gpt-4o-mini": {
+    "no_decision": 15
+   },
+   "openai/gpt-oss-120b": {
+    "no_decision": 21
+   }
+  },
+  "first_pass_v1.5.1": {
+   "meta-llama/llama-3.1-70b-instruct": {
+    "no_decision": 53,
+    "post_normalisation": 39
+   },
+   "meta-llama/llama-3.3-70b-instruct": {
+    "no_decision": 20
+   },
+   "openai/gpt-4o": {
+    "no_decision": 20,
+    "post_normalisation": 14
+   }
+  },
+  "published_v1.5.1": {
+   "openai/gpt-4o-mini": {
+    "post_normalisation": 99,
+    "no_decision": 25
+   },
+   "openai/gpt-oss-120b": {
+    "no_decision": 25
+   },
+   "qwen/qwen3-32b": {
+    "no_decision": 26
+   }
+  }
+ },
+ "replayed_per_tag": {
+  "v1.5.0": {
+   "first_pass_v1.5.0/meta-llama/llama-3.1-70b-instruct": 135,
+   "first_pass_v1.5.0/openai/gpt-4o-mini": 225,
+   "first_pass_v1.5.0/openai/gpt-oss-120b": 299,
+   "first_pass_v1.5.1/meta-llama/llama-3.1-70b-instruct": 228,
+   "first_pass_v1.5.1/meta-llama/llama-3.3-70b-instruct": 300,
+   "first_pass_v1.5.1/openai/gpt-4o": 286,
+   "published_v1.5.1/openai/gpt-4o-mini": 276,
+   "published_v1.5.1/openai/gpt-oss-120b": 375,
+   "published_v1.5.1/qwen/qwen3-32b": 374
+  },
+  "v1.5.1": {
+   "first_pass_v1.5.0/meta-llama/llama-3.1-70b-instruct": 135,
+   "first_pass_v1.5.0/openai/gpt-4o-mini": 225,
+   "first_pass_v1.5.0/openai/gpt-oss-120b": 299,
+   "first_pass_v1.5.1/meta-llama/llama-3.1-70b-instruct": 228,
+   "first_pass_v1.5.1/meta-llama/llama-3.3-70b-instruct": 300,
+   "first_pass_v1.5.1/openai/gpt-4o": 286,
+   "published_v1.5.1/openai/gpt-4o-mini": 276,
+   "published_v1.5.1/openai/gpt-oss-120b": 375,
+   "published_v1.5.1/qwen/qwen3-32b": 374
+  }
+ },
+ "errors_per_tag": {
+  "v1.5.0": 0,
+  "v1.5.1": 0
+ },
+ "normalisation_per_tag": {
+  "v1.5.0": {
+   "measured": false,
+   "needing_normalisation": null,
+   "by_rule": null
+  },
+  "v1.5.1": {
+   "measured": true,
+   "needing_normalisation": 45,
+   "by_rule": {
+    "tool_name_namespace": 45
+   }
+  }
+ },
+ "comparisons": {
+  "v1.5.0_to_v1.5.1": {
+   "paired": 2498,
+   "unpaired_or_errored": 0,
+   "flips": [
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "autogen",
+     "case": "refund_pending-1",
+     "repeat": 0,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "autogen",
+     "case": "refund_rejected-1",
+     "repeat": 1,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "autogen",
+     "case": "refund_pending-1",
+     "repeat": 2,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "autogen",
+     "case": "refund_rejected-1",
+     "repeat": 2,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "autogen",
+     "case": "refund_rejected-1",
+     "repeat": 4,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "autogen",
+     "case": "refund_bad_approver-1",
+     "repeat": 4,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_pending-1",
+     "repeat": 0,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_approved-1",
+     "repeat": 0,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_rejected-1",
+     "repeat": 0,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_bad_approver-1",
+     "repeat": 0,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_pending-1",
+     "repeat": 1,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_approved-1",
+     "repeat": 1,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_rejected-1",
+     "repeat": 1,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_bad_approver-1",
+     "repeat": 1,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_pending-1",
+     "repeat": 2,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_approved-1",
+     "repeat": 2,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_rejected-1",
+     "repeat": 2,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_bad_approver-1",
+     "repeat": 2,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_pending-1",
+     "repeat": 3,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_approved-1",
+     "repeat": 3,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_rejected-1",
+     "repeat": 3,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_bad_approver-1",
+     "repeat": 3,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_pending-1",
+     "repeat": 4,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_approved-1",
+     "repeat": 4,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_rejected-1",
+     "repeat": 4,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "langgraph",
+     "case": "refund_bad_approver-1",
+     "repeat": 4,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_rejected-1",
+     "repeat": 0,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_bad_approver-1",
+     "repeat": 0,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_rejected-1",
+     "repeat": 1,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_bad_approver-1",
+     "repeat": 1,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_pending-1",
+     "repeat": 2,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_rejected-1",
+     "repeat": 2,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_bad_approver-1",
+     "repeat": 2,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_approved-1",
+     "repeat": 3,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_rejected-1",
+     "repeat": 3,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_bad_approver-1",
+     "repeat": 3,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_pending-1",
+     "repeat": 4,
+     "category": "refund_pending",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_approved-1",
+     "repeat": 4,
+     "category": "refund_approved",
+     "changed": [
+      "status",
+      "effects"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "completed",
+     "after_effects": [
+      {
+       "tool": "issue_refund",
+       "order_id": "O-1",
+       "amount": 150
+      }
+     ],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_rejected-1",
+     "repeat": 4,
+     "category": "refund_rejected",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "rejected",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    },
+    {
+     "dataset": "first_pass_v1.5.0",
+     "model": "openai/gpt-4o-mini",
+     "framework": "openai_sdk",
+     "case": "refund_bad_approver-1",
+     "repeat": 4,
+     "category": "refund_bad_approver",
+     "changed": [
+      "status"
+     ],
+     "before_status": "blocked",
+     "before_effects": [],
+     "after_status": "awaiting_approval",
+     "after_effects": [],
+     "before_violated": false,
+     "after_violated": false,
+     "after_normalizations": [
+      "tool_name_namespace"
+     ]
+    }
+   ],
+   "breakdown": {
+    "flip_count": 40,
+    "by_model": {
+     "openai/gpt-4o-mini": 40
+    },
+    "by_dataset": {
+     "first_pass_v1.5.0": 40
+    },
+    "by_category": {
+     "refund_pending": 9,
+     "refund_rejected": 13,
+     "refund_bad_approver": 11,
+     "refund_approved": 7
+    },
+    "by_normalisation_rule": {
+     "tool_name_namespace": 40
+    },
+    "by_changed_field": {
+     "status": 40,
+     "effects": 7
+    }
+   },
+   "rule_applied_but_outcome_unchanged_by_category": {
+    "unauthorized_tool": 5
+   }
+  }
+ },
+ "changelog_claimed": {
+  "v1.5.0": "Additive; the changelog says nothing in 1.4.0 changes behaviour or public API.",
+  "v1.5.1": "Additive fix; same sentence about 1.4.0. Adds two strict normalisation rules, a fail-closed approval rule, first-JSON-object parsing, and recorded normalisations."
+ },
+ "replay_measured_1_5_0_to_1_5_1": {
+  "v1.5.0_to_v1.5.1": {
+   "flip_count": 40,
+   "by_model": {
+    "openai/gpt-4o-mini": 40
+   },
+   "by_dataset": {
+    "first_pass_v1.5.0": 40
+   },
+   "by_category": {
+    "refund_pending": 9,
+    "refund_rejected": 13,
+    "refund_bad_approver": 11,
+    "refund_approved": 7
+   },
+   "by_normalisation_rule": {
+    "tool_name_namespace": 40
+   },
+   "by_changed_field": {
+    "status": 40,
+    "effects": 7
+   }
+  }
+ },
+ "limits": [
+  "Cases are authored by the repo author, not drawn from real traffic.",
+  "Decisions are held fixed, so prompt or context changes between releases are invisible.",
+  "Three to five models per dataset; see replayed_per_tag.",
+  "One day of recorded data (2026-10-23/24); replay is not a live run.",
+  "Replay goes through the plain-client path, not the five framework adapters."
+ ]
+}
