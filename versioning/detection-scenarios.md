@@ -27,7 +27,7 @@ Scope: signature-level, stdlib `ast` only. Reproduce the measurement with `pytho
 | `base_removed` | `base_pos_removed` | `base_neg_added` | Removing a base class (textual, same-file) drops inherited members and `isinstance` behaviour. |
 | `ctor_change` via synthesised constructors | `dc_pos_required_field`, `dc_pos_field_removed`, `dc_pos_field_reorder`, `pyd_pos_required_field` | `dc_neg_default_field`, `dc_neg_default_factory`, `pyd_neg_optional_field`, `pyd_neg_field_order` | Dataclass and pydantic `BaseModel` fields define the constructor. Pydantic accepts keywords only, so field order is not breaking there; dataclass field order is. |
 
-Parse errors: the detector is documented to return a structured `parse_error` result for unparseable source instead of raising. No case in `eval/cases.py` exercises it.
+Parse errors: the detector is documented to return a structured `parse_error` result for unparseable source instead of raising. No case in `eval/cases.py` exercises it; `tests/test_breaking_changes.py::test_syntax_error_returns_parse_error` does.
 
 ## Benign edits (authored, must not be reported)
 

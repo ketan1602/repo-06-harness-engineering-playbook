@@ -68,67 +68,46 @@ Always returns — never raises. On failure, returns `HarnessResult(success=Fals
 
 A change is **breaking** if it causes any existing, correct caller to fail at import time or runtime without the caller changing its own code.
 
-| Change type | Breaking | Detection method |
+The detector (`versioning/breaking_change_detector.py`) implements a signature-level subset of this definition.
+Examples of each row are authored cases in `eval/cases.py` (see `versioning/detection-scenarios.md`).
+
+| Change type | Breaking | Detected by the current detector |
 |---|---|---|
-| Name removed from `__all__` or public surface | **Yes** | Pass 2: set difference `v1_names - v2_names` |
-| Class or function renamed | **Yes** | Detected as removal of old name |
-| Positional parameter removed from a function | **Yes** | Pass 3: param list diff on top-level funcs |
-| Positional parameter removed from a method | **Yes** | Pass 4: param list diff per class method |
-| Public method removed from a class | **Yes** | Pass 4: method presence check |
-| Required parameter added | **Yes** | Detected as removed in the reverse direction — use detector bidirectionally if needed |
-| Optional parameter added (`param=None`) | **No** | Absent from v1 param list; v1 callers unaffected |
-| New name added to public surface | **No** | Additive; existing callers unaffected |
-| Docstring, comment, whitespace changed | **No** | Not present in AST semantic surface |
-| Private name changed (`_name`) | **No** | Filtered at extraction; not in public contract |
+| Name removed from `__all__` or public surface | **Yes** | Yes (`removed_name`) |
+| Class or function renamed | **Yes** | Yes, as removal of the old name |
+| Parameter removed from a function or method | **Yes** | Yes (`changed_signature`) |
+| Public method removed from a class | **Yes** | Yes (`removed_method`) |
+| Required parameter added | **Yes** | Yes, directly (`required_param_added`) |
+| Optional parameter became required | **Yes** | Yes (`optional_to_required`) |
+| Positional parameters reordered, or a parameter inserted before existing positional ones | **Yes** | Yes (`positional_reorder`) |
+| Constructor changed (explicit `__init__`, dataclass fields, pydantic `BaseModel` fields) | **Yes** | Yes (`ctor_change`) |
+| `async` function became sync, or the reverse | **Yes** | Yes (`async_flip`) |
+| Parameter made keyword-only or positional-only | **Yes** | Yes (`kwonly_posonly_change`) |
+| `property`, `staticmethod`, `classmethod`, `cached_property` added or removed | **Yes** | Yes (`decorator_change`) |
+| Base class removed (same-file bases only) | **Yes** | Yes (`base_removed`) |
+| Default value changed | **Yes** (callers relying on it change behaviour) | **No, by design** |
+| Behavioural change (e.g. a newly raised exception) | **Yes** | **No, by design** |
+| Imported base class changed, return or annotation semantics, runtime-generated APIs | **Yes** | **No, by design** |
+| Optional parameter appended (`param=None`) | **No** | Not reported |
+| New name added to public surface | **No** | Not reported |
+| Docstring, comment, whitespace changed | **No** | Not reported |
+| Private name changed (`_name`) | **No** | Not reported |
+
+Behavioural changes require behavioural conformance testing; a structural check cannot substitute for it.
 
 ---
 
 ## Detection Algorithm
 
-`breaking_change_detector.detect(v1_source, v2_source)` runs 4 passes over Python AST:
+`breaking_change_detector.detect(v1_source, v2_source)` parses both sources with `ast.parse()` (stdlib only, no imports, no execution) and returns a list of `BreakingChange(kind, name, detail)`.
+A syntax error in either source returns a single `parse_error` entry instead of raising.
 
-### Pass 1 — Public name resolution
+1. **Public names.** `__all__` string elements if defined, otherwise top-level non-underscore names. Names in v1 missing from v2 emit `removed_name`.
+2. **Top-level functions.** For each public function in both versions, compare signatures (`signature_model.compare`): removed parameters, added required parameters, optional-to-required, positional order (including insertion before existing positional parameters), keyword-only/positional-only narrowing, async flips and calling-convention decorators.
+3. **Classes.** For each public class in both versions (`class_model`): removed methods, per-method signature comparison, constructor comparison (explicit `__init__`, dataclass fields, pydantic `BaseModel` fields) and removed same-file base classes.
 
-```python
-# Priority 1: __all__ is the authoritative public surface
-__all__ = ["AgentHarness", "HarnessConfig"]
-
-# Fallback (no __all__): all top-level non-underscore names
-class AgentHarness: ...   # included
-class _Internal: ...      # excluded
-def run(): ...            # included
-```
-
-### Pass 2 — Removed public names
-
-```python
-for name in sorted(v1_names - v2_names):
-    emit BreakingChange(kind="removed_name", name=name)
-```
-
-### Pass 3 — Top-level function signatures
-
-```python
-# Extract: posonlyargs + args + kwonlyargs, excluding self/cls
-for name in v1_funcs:
-    if name in v2_funcs:
-        removed_params = [p for p in v1_params if p not in v2_params]
-        if removed_params:
-            emit BreakingChange(kind="changed_signature")
-```
-
-### Pass 4 — Class method signatures
-
-```python
-for cls in v1_classes:
-    for method in v1_methods:
-        if method not in v2_methods:
-            emit BreakingChange(kind="removed_method")
-        elif params removed:
-            emit BreakingChange(kind="changed_signature")
-```
-
-All passes operate on `ast.parse()` output — no imports, no execution, no environment setup.
+Appending an optional parameter, adding names or methods, and reformatting are not reported.
+Measured behaviour on authored cases: `measurements/detector_before_after.json` (reproduce with `python -m eval.before_after`).
 
 ---
 
@@ -142,7 +121,7 @@ Three check groups:
 2. **Signature checks** — `inspect.signature(AgentHarness.__init__)` for 5 init params
 3. **Field checks** — `HarnessResult.__dataclass_fields__` for 7 result fields
 
-Total: 25 checks. Pass rate must be 100% before a release ships.
+Total: 25 checks (13 exports + 5 init params + 7 result fields, verified by running `compatibility/suite.py` against the installed package). Pass rate must be 100% before a release ships.
 
 ---
 
@@ -152,4 +131,4 @@ Total: 25 checks. Pass rate must be 100% before a release ships.
 - **Minor version**: new optional params, new exported names, new config keys with defaults
 - **Patch version**: bug fixes, log improvements, no behaviour change
 
-Automated enforcement: the breaking-change detector runs in CI on every PR that touches `harness_core`. A non-zero `detect()` result blocks merge.
+Automated enforcement (PROPOSED, NOT IMPLEMENTED): running the detector in CI on every PR that touches `harness_core` and blocking merge on a non-empty result. This repo contains no CI workflow; the detector is only run by tests, the dashboard and `python -m eval.before_after`.
