@@ -109,7 +109,7 @@ Open `http://localhost:8000/demo`, paste two API surfaces, click **Detect Breaki
 python3 -m pytest tests/ -q
 ```
 
-Last run: 74 passed. No API calls.
+Last run: 80 passed. No API calls.
 
 ---
 
@@ -138,7 +138,22 @@ Caveat: the fixed detector's 23/23 is partly circular, because the same author w
 ## Behavioural replay across releases
 
 <!-- REPLAY-RESULTS -->
-Pending: see measurements/replay_across_versions.json when present.
+Question: harness releases that pass signature checks and are labelled additive can still change what an agent is allowed to do. Method: stored model decisions from past live runs (no new model calls) are replayed through harness-core v1.5.0 and v1.5.1, loaded from their git tags in separate subprocesses, so the harness version is the only variable. Reproduce: `python scripts/run_replay.py` (writes `measurements/replay_across_versions.json`); release history: `python scripts/run_release_history.py` (writes `measurements/release_history.json`).
+
+| Measured (from `replay_across_versions.json`) | v1.5.0 to v1.5.1 |
+|---|---|
+| Decisions replayed per tag (paired), errors | 2,498, 0 |
+| Outcome flips | 40 |
+| Models / dataset affected | gpt-4o-mini only / `first_pass_v1.5.0` only |
+| Rule responsible | `tool_name_namespace` (all 40) |
+| Flips by category | refund_pending 9, refund_rejected 13, refund_bad_approver 11, refund_approved 7 |
+| Stored decisions that needed normalisation | 45 (5 did not flip: all `unauthorized_tool`, blocked either way) |
+
+Every flip was a status change from `blocked` in v1.5.0 (7 also changed effects). The changelog describes both releases as additive. The signature detectors (baseline and fixed) report 0 changes for 1.4.0 to 1.5.0 and for 1.5.0 to 1.5.1. The compatibility suite passes 25 of 25 on every tag from v1.0.0 to v1.5.1, so it also did not register these changes. The fixed detector reports one `ctor_change` between 1.3.0 and 1.4.0 (a defaulted `HarnessResult` field inserted before existing fields); the baseline reports none.
+
+What this shows: neither signature-level detection nor an additive label predicted a measurable change in outcomes. What it does not show: that the change was a regression. The v1.5.1 changelog describes the rule as a fix, since provider-prefixed tool names were being refused. Read the flips as outcome changes, not defects.
+
+Limits: authored cases; model decisions held fixed, so prompt or context changes between releases are invisible; one model produced all flips; the v1.5.1-era stored decisions are already normalised, so records where a rule applied (152) are excluded and the data from that era is survivor-filtered; v1.4.0 could not be replayed (the tag has no scenario module); replay uses the plain client path, not the five framework adapters; one day of recorded data. Details and exclusions: `measurements/exclusions.md`.
 
 ---
 
