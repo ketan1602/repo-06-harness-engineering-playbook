@@ -4,6 +4,7 @@ Usage: HARNESS_REPO=<checkout> python3 scripts/run_release_history.py. No model,
 """
 from __future__ import annotations
 
+import itertools
 import json
 import os
 import sys
@@ -24,7 +25,7 @@ CHANGELOG = {
     "v1.2.0": ("unspecified", "Changelog says entries for 1.1.0 to 1.3.0 were not recorded."),
     "v1.3.0": ("unspecified", "Changelog says entries for 1.1.0 to 1.3.0 were not recorded."),
     "v1.4.0": ("breaking", "Marks one change Breaking (LLM evaluator env vars) and one Behaviour "
-                           "change (empty allowed_tools list no longer allows everything)."),
+               + "change (empty allowed_tools list no longer allows everything)."),
     "v1.5.0": ("additive", "Described as additive; says nothing in 1.4.0 changes behaviour or API."),
     "v1.5.1": ("additive", "Described as an additive fix; same statement about 1.4.0."),
 }
@@ -74,7 +75,7 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         per_tag = {tag: compat(harness, tag, Path(tmp)) for tag in TAGS}
     pairs = {}
-    for old, new in zip(TAGS, TAGS[1:], strict=False):
+    for old, new in itertools.pairwise(TAGS):
         kind, text = CHANGELOG[new]
         pairs[f"{old}->{new}"] = {"changelog_says": kind, "changelog_paraphrase": text,
                                   **detect_pair(harness, old, new)}
