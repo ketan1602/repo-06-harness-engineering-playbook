@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 
 
-def extract(harness: Path, tag: str, dest: Path) -> str:
-    """Unpack `src` of a tag under dest (never touches the checkout). Returns '' or an error."""
+def extract(harness: Path, tag: str, dest: Path, paths: tuple[str, ...] = ("src",)) -> str:
+    """Unpack `paths` of a tag under dest (never touches the checkout). Returns '' or an error."""
     dest.mkdir(parents=True)
-    archive = subprocess.Popen(["git", "-C", str(harness), "archive", tag, "src"],
+    archive = subprocess.Popen(["git", "-C", str(harness), "archive", tag, *paths],
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     untar = subprocess.run(["tar", "-x", "-C", str(dest)], stdin=archive.stdout,
                            capture_output=True, check=False)
