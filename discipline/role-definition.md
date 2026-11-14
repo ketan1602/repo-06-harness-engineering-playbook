@@ -22,12 +22,15 @@ They own the infrastructure that all agent teams depend on.
 - Not responsible for LLM prompt engineering
 - Not responsible for individual agent performance
 
-## Success Metrics
+## Success Metrics (targets, not measurements)
 
-- Compatibility suite pass rate: **100%** across all downstream repos
-- Breaking change detection time: **< 5 minutes** (CI gate)
-- Upgrade success rate: **> 95%** of downstream repos on current major within migration window
-- Zero breaking changes reaching production undetected
+Every figure below is a TARGET the role aims for. None of them is measured by this repo;
+`measurements/discipline_metrics.json` records them as `null` (not measured) where no script produces a value.
+
+- TARGET: compatibility suite pass rate **100%** across all downstream repos
+- TARGET: breaking-change detection time **< 5 minutes** (a proposed CI gate; no CI workflow exists in this repo)
+- TARGET: upgrade success rate **> 95%** of downstream repos on current major within migration window
+- TARGET: zero breaking changes reaching production undetected
 
 ## Relationship to Agent Teams
 
