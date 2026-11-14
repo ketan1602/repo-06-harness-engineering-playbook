@@ -1,0 +1,148 @@
+{
+  "generated_at": "2026-11-14T14:53:19.870527+00:00",
+  "label": "authored cases only; hand-labelled expected results; signature-level detection",
+  "baseline_commit": "429d5440596c56269db12b26f3e37b53dfe08dda",
+  "python": "3.14.0",
+  "timing_repeats_per_case": 200,
+  "per_class": {
+    "removed_name": {
+      "cases": 2,
+      "expected_breaking": 1,
+      "caught_by_baseline": 1,
+      "caught_by_fixed": 1,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "removed_method": {
+      "cases": 2,
+      "expected_breaking": 1,
+      "caught_by_baseline": 1,
+      "caught_by_fixed": 1,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "changed_signature": {
+      "cases": 2,
+      "expected_breaking": 1,
+      "caught_by_baseline": 1,
+      "caught_by_fixed": 1,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "required_param_added": {
+      "cases": 3,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 2,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "optional_to_required": {
+      "cases": 3,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 2,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "positional_reorder": {
+      "cases": 4,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 2,
+      "expected_not_breaking": 2,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "ctor_change": {
+      "cases": 4,
+      "expected_breaking": 3,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 3,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "async_flip": {
+      "cases": 3,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 2,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "kwonly_posonly_change": {
+      "cases": 3,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 2,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "decorator_change": {
+      "cases": 3,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 2,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "base_removed": {
+      "cases": 2,
+      "expected_breaking": 1,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 1,
+      "expected_not_breaking": 1,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "synthesised_ctor": {
+      "cases": 8,
+      "expected_breaking": 4,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 4,
+      "expected_not_breaking": 4,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    },
+    "out_of_scope": {
+      "cases": 2,
+      "expected_breaking": 2,
+      "caught_by_baseline": 0,
+      "caught_by_fixed": 0,
+      "expected_not_breaking": 0,
+      "false_positives_baseline": 0,
+      "false_positives_fixed": 0
+    }
+  },
+  "benign": {
+    "cases": 12,
+    "expected_breaking": 0,
+    "caught_by_baseline": 0,
+    "caught_by_fixed": 0,
+    "expected_not_breaking": 12,
+    "false_positives_baseline": 0,
+    "false_positives_fixed": 0
+  },
+  "overall_in_scope": {
+    "cases": 51,
+    "expected_breaking": 23,
+    "caught_by_baseline": 3,
+    "caught_by_fixed": 23,
+    "expected_not_breaking": 28,
+    "false_positives_baseline": 0,
+    "false_positives_fixed": 0
+  },
+  "median_runtime_us": {
+    "baseline": 9.71,
+    "fixed": 14.4
+  }
+}
